@@ -10,3 +10,8 @@ collections:
   # https://galaxy.ansible.com/ui/repo/published/community/general/docs/
   - name: community.general
     version: 6.6.1
+
+  # https://galaxy.ansible.com/ui/repo/published/ansible/posix/docs/
+  # Required by molecule docker driver (ansible.posix.synchronize)
+  - name: ansible.posix
+    version: 1.5.4
