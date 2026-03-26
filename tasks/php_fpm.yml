@@ -1,0 +1,16 @@
+---
+- name: Deploy PHP-FPM Pool Configuration
+  ansible.builtin.template:
+    src: php-fpm-pool.conf.j2
+    dest: "{{ wordpress_php_fpm_pool_dir }}/wordpress.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart php-fpm
+
+- name: Ensure PHP-FPM Service Is Started
+  ansible.builtin.systemd:
+    name: "{{ wordpress_php_fpm_service }}"
+    state: started
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,5 @@
+---
+- name: Install PHP and WordPress Prerequisites
+  ansible.builtin.dnf:
+    name: "{{ wordpress_php_packages + wordpress_prerequisite_packages }}"
+    state: present

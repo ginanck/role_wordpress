@@ -1,0 +1,12 @@
+---
+- name: Check If WP-CLI Is Already Installed
+  ansible.builtin.stat:
+    path: "{{ wordpress_cli_path }}"
+  register: wordpress_cli_stat
+
+- name: Download WP-CLI
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+    dest: "{{ wordpress_cli_path }}"
+    mode: "0755"
+  when: not wordpress_cli_stat.stat.exists

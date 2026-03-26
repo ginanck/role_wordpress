@@ -1,0 +1,12 @@
+---
+
+roles: []
+
+collections:
+  # Required for molecule to spin up containers
+  - name: community.docker
+    version: 4.8.1
+
+  # https://galaxy.ansible.com/ui/repo/published/community/general/docs/
+  - name: community.general
+    version: 6.6.1

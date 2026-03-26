@@ -1,0 +1,22 @@
+---
+- name: Deploy wp-config.php
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: "{{ wordpress_site_dir }}/wp-config.php"
+    owner: "{{ wordpress_owner }}"
+    group: "{{ wordpress_group }}"
+    mode: "0640"
+
+- name: Ensure WordPress Directories Have Correct Permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ wordpress_owner }}"
+    group: "{{ wordpress_group }}"
+    mode: "0755"
+  loop:
+    - "{{ wordpress_site_dir }}"
+    - "{{ wordpress_site_dir }}/wp-content"
+    - "{{ wordpress_site_dir }}/wp-content/uploads"
+    - "{{ wordpress_site_dir }}/wp-content/plugins"
+    - "{{ wordpress_site_dir }}/wp-content/themes"

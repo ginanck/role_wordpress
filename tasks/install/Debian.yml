@@ -1,0 +1,6 @@
+---
+- name: Install PHP and WordPress Prerequisites
+  ansible.builtin.apt:
+    name: "{{ wordpress_php_packages + wordpress_prerequisite_packages }}"
+    state: present
+    update_cache: true

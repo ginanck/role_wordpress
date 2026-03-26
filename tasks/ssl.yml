@@ -1,0 +1,35 @@
+---
+- name: Ensure SSL Certificate Directory Exists
+  ansible.builtin.file:
+    path: "{{ wordpress_ssl_cert_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Deploy SSL Certificate
+  ansible.builtin.copy:
+    src: "{{ wordpress_ssl_cert_source }}"
+    dest: "{{ wordpress_ssl_cert_dir }}/certificate.pem"
+    owner: root
+    group: root
+    mode: "0644"
+  when: wordpress_ssl_cert_source | length > 0
+
+- name: Deploy SSL Private Key
+  ansible.builtin.copy:
+    src: "{{ wordpress_ssl_key_source }}"
+    dest: "{{ wordpress_ssl_cert_dir }}/private.pem"
+    owner: root
+    group: root
+    mode: "0600"
+  when: wordpress_ssl_key_source | length > 0
+
+- name: Deploy SSL CA Bundle
+  ansible.builtin.copy:
+    src: "{{ wordpress_ssl_ca_source }}"
+    dest: "{{ wordpress_ssl_cert_dir }}/cabundle.pem"
+    owner: root
+    group: root
+    mode: "0644"
+  when: wordpress_ssl_ca_source | length > 0
