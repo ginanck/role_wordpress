@@ -1,4 +1,20 @@
 ---
+- name: Ensure PHP-FPM Socket Directory Exists
+  ansible.builtin.file:
+    path: "{{ wordpress_php_fpm_sock_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure PHP-FPM Log Directory Exists
+  ansible.builtin.file:
+    path: "{{ wordpress_php_fpm_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Deploy PHP-FPM Pool Configuration
   ansible.builtin.template:
     src: php-fpm-pool.conf.j2

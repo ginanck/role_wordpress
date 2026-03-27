@@ -26,4 +26,6 @@ wordpress_prerequisite_packages:
 
 wordpress_php_fpm_service: "php-fpm"
 wordpress_php_fpm_pool_dir: "/etc/php-fpm.d"
+wordpress_php_fpm_sock_dir: "/run/php-fpm"
+wordpress_php_fpm_log_dir: "/var/log/php-fpm"
 wordpress_php_ini_dir: "/etc"
