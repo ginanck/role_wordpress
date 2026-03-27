@@ -5,3 +5,4 @@
   roles:
     - role_base
     - role_nginx
+    - role_mariadb

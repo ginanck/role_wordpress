@@ -5,6 +5,8 @@ roles:
     version: master
   - src: https://github.com/ginanck/role_nginx.git
     version: master
+  - src: https://github.com/ginanck/role_mariadb.git
+    version: master
 
 collections:
   # Required for molecule to spin up containers
@@ -19,3 +21,8 @@ collections:
   # Required by molecule docker driver (ansible.posix.synchronize)
   - name: ansible.posix
     version: 1.5.4
+
+  # https://galaxy.ansible.com/ui/repo/published/community/mysql/docs/
+  # Required by role_mariadb in prepare phase
+  - name: community.mysql
+    version: 3.12.0
