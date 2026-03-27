@@ -1,4 +1,7 @@
 ---
+wordpress_owner: "nginx"
+wordpress_group: "nginx"
+
 wordpress_php_packages:
   - php
   - php-cli
