@@ -2,6 +2,14 @@
 - name: Prepare
   hosts: all
   become: true
+  pre_tasks:
+    - name: Ensure sysctl.d Directory Exists
+      ansible.builtin.file:
+        path: /etc/sysctl.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
   roles:
     - role_base
     - role_nginx
