@@ -10,11 +10,14 @@
     state: present
     disable_gpg_check: true
 
+- name: Reset PHP Module
+  ansible.builtin.command:
+    cmd: "dnf module reset php -y"
+  register: wordpress_php_module_reset
+  changed_when: "'Resetting' in wordpress_php_module_reset.stdout"
+
 - name: Enable Remi PHP Module
   ansible.builtin.command:
-    cmd: "dnf module reset php -y && dnf module enable php:remi-{{ wordpress_php_version }} -y"
-  args:
-    executable: /bin/bash
+    cmd: "dnf module enable php:remi-{{ wordpress_php_version }} -y"
   register: wordpress_remi_module
   changed_when: "'Enabling' in wordpress_remi_module.stdout"
-  failed_when: wordpress_remi_module.rc != 0
