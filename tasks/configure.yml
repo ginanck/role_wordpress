@@ -1,4 +1,41 @@
 ---
+- name: Check If wp-config.php Already Exists
+  ansible.builtin.stat:
+    path: "{{ wordpress_site_dir }}/wp-config.php"
+  register: wordpress_wpconfig_stat
+
+- name: Read Existing Salts from wp-config.php
+  ansible.builtin.shell:
+    cmd: |
+      grep "define.*'AUTH_KEY'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'AUTH_KEY',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'SECURE_AUTH_KEY'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'SECURE_AUTH_KEY',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'LOGGED_IN_KEY'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'LOGGED_IN_KEY',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'NONCE_KEY'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'NONCE_KEY',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'AUTH_SALT'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'AUTH_SALT',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'SECURE_AUTH_SALT'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'SECURE_AUTH_SALT',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'LOGGED_IN_SALT'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'LOGGED_IN_SALT',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+      grep "define.*'NONCE_SALT'" {{ wordpress_site_dir }}/wp-config.php | sed "s/.*'NONCE_SALT',[[:space:]]*'//;s/'[[:space:]]*).*$//"
+    executable: /bin/bash
+  register: wordpress_existing_salts
+  changed_when: false
+  when:
+    - wordpress_wpconfig_stat.stat.exists
+    - wordpress_auth_key | length == 0
+
+- name: Set Existing Salts as Facts
+  ansible.builtin.set_fact:
+    wordpress_auth_key: "{{ wordpress_existing_salts.stdout_lines[0] }}"
+    wordpress_secure_auth_key: "{{ wordpress_existing_salts.stdout_lines[1] }}"
+    wordpress_logged_in_key: "{{ wordpress_existing_salts.stdout_lines[2] }}"
+    wordpress_nonce_key: "{{ wordpress_existing_salts.stdout_lines[3] }}"
+    wordpress_auth_salt: "{{ wordpress_existing_salts.stdout_lines[4] }}"
+    wordpress_secure_auth_salt: "{{ wordpress_existing_salts.stdout_lines[5] }}"
+    wordpress_logged_in_salt: "{{ wordpress_existing_salts.stdout_lines[6] }}"
+    wordpress_nonce_salt: "{{ wordpress_existing_salts.stdout_lines[7] }}"
+  when:
+    - wordpress_existing_salts is not skipped
+    - wordpress_existing_salts.stdout_lines | length == 8
+
 - name: Deploy wp-config.php
   ansible.builtin.template:
     src: wp-config.php.j2
