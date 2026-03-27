@@ -1,0 +1,31 @@
+---
+wordpress_owner: "nginx"
+wordpress_group: "nginx"
+
+wordpress_php_packages:
+  - php
+  - php-cli
+  - php-fpm
+  - php-mysqlnd
+  - php-curl
+  - php-gd
+  - php-intl
+  - php-mbstring
+  - php-xml
+  - php-zip
+  - php-soap
+  - php-imagick
+  - php-bcmath
+  - php-opcache
+
+wordpress_prerequisite_packages:
+  - curl
+  - unzip
+  - tar
+  - ghostscript
+
+wordpress_php_fpm_service: "php-fpm"
+wordpress_php_fpm_pool_dir: "/etc/php-fpm.d"
+wordpress_php_fpm_sock_dir: "/run/php-fpm"
+wordpress_php_fpm_log_dir: "/var/log/php-fpm"
+wordpress_php_ini_dir: "/etc"

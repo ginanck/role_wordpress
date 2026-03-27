@@ -1,0 +1,78 @@
+---
+- name: Validate Restore Parameters
+  ansible.builtin.assert:
+    that:
+      - wordpress_restore_files_source | length > 0
+    fail_msg: "wordpress_restore_files_source must be set when wordpress_restore_enabled is true"
+
+- name: Check If WordPress Is Already Restored
+  ansible.builtin.stat:
+    path: "{{ wordpress_site_dir }}/wp-config.php"
+  register: wordpress_restore_check
+
+- name: Restore WordPress Files from Backup
+  when: not wordpress_restore_check.stat.exists
+  block:
+    - name: Ensure WordPress Site Directory Exists
+      ansible.builtin.file:
+        path: "{{ wordpress_site_dir }}"
+        state: directory
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        mode: "0755"
+
+    - name: Create Temporary Restore Directory
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: wordpress_restore_
+      register: wordpress_restore_tmpdir
+
+    - name: Restore from Directory Source
+      when: wordpress_restore_files_source is not search('\\.(tar\\.gz|zip)$')
+      block:
+        - name: Copy WordPress Files from Directory
+          ansible.builtin.copy:
+            src: "{{ wordpress_restore_files_source }}/"
+            dest: "{{ wordpress_site_dir }}/"
+            owner: "{{ wordpress_owner }}"
+            group: "{{ wordpress_group }}"
+            mode: "0755"
+            directory_mode: "0755"
+
+    - name: Restore from Archive Source
+      when: wordpress_restore_files_source is search('\\.(tar\\.gz|zip)$')
+      block:
+        - name: Copy Backup Archive to Target
+          ansible.builtin.copy:
+            src: "{{ wordpress_restore_files_source }}"
+            dest: "{{ wordpress_restore_tmpdir.path }}/backup_archive"
+            mode: "0600"
+          register: wordpress_restore_archive_copied
+
+        - name: Extract tar.gz WordPress Archive
+          ansible.builtin.unarchive:
+            src: "{{ wordpress_restore_archive_copied.dest }}"
+            dest: "{{ wordpress_site_dir }}"
+            remote_src: true
+          when: wordpress_restore_files_source is search('\\.tar\\.gz$')
+
+        - name: Extract zip WordPress Archive
+          ansible.builtin.unarchive:
+            src: "{{ wordpress_restore_archive_copied.dest }}"
+            dest: "{{ wordpress_site_dir }}"
+            remote_src: true
+          when: wordpress_restore_files_source is search('\\.zip$')
+
+    - name: Set Correct Ownership on Restored Files
+      ansible.builtin.file:
+        path: "{{ wordpress_site_dir }}"
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        recurse: true
+
+  always:
+    - name: Clean Up Temporary Restore Directory
+      ansible.builtin.file:
+        path: "{{ wordpress_restore_tmpdir.path }}"
+        state: absent
+      when: wordpress_restore_tmpdir is defined

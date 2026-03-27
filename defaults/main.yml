@@ -1,0 +1,74 @@
+---
+# WordPress version
+wordpress_version: "6.7.2"
+
+# WordPress installation paths
+wordpress_dir: "/var/www"
+wordpress_site_dir: "{{ wordpress_dir }}/{{ wordpress_domain }}"
+wordpress_owner: "www-data"
+wordpress_group: "www-data"
+
+# WordPress site configuration
+wordpress_domain: "example.com"
+wordpress_site_title: "My WordPress Site"
+wordpress_locale: "en_US"
+wordpress_table_prefix: "wp_"
+
+# WordPress admin user
+wordpress_admin_user: "admin"
+wordpress_admin_password: "changeme"
+wordpress_admin_email: "admin@example.com"
+
+# WordPress database connection
+wordpress_db_name: "wordpress"
+wordpress_db_user: "wordpress"
+wordpress_db_password: "changeme"
+wordpress_db_host: "localhost"
+wordpress_db_charset: "utf8mb4"
+wordpress_db_collate: ""
+
+# WordPress wp-config.php extra settings
+wordpress_memory_limit: "128M"
+wordpress_max_memory_limit: "256M"
+wordpress_fs_method: "direct"
+wordpress_autosave_interval: 160
+wordpress_post_revisions: 5
+wordpress_debug: false
+
+# WordPress authentication keys and salts
+# Leave empty to auto-generate during installation
+wordpress_auth_key: ""
+wordpress_secure_auth_key: ""
+wordpress_logged_in_key: ""
+wordpress_nonce_key: ""
+wordpress_auth_salt: ""
+wordpress_secure_auth_salt: ""
+wordpress_logged_in_salt: ""
+wordpress_nonce_salt: ""
+
+# WP-CLI installation
+wordpress_cli_path: "/usr/local/bin/wp"
+
+# PHP version and packages
+wordpress_php_version: "8.3"
+
+# Restore configuration
+wordpress_restore_enabled: false
+
+# Restore WordPress files from backup
+# Supported formats: directory path, .tar.gz, .zip
+wordpress_restore_files_source: ""
+
+# Restore database from backup (handled by role_mariadb, but can also be triggered here)
+wordpress_restore_db_source: ""
+
+# SSL certificate configuration (for restore scenarios)
+wordpress_ssl_enabled: false
+wordpress_ssl_cert_source: ""
+wordpress_ssl_key_source: ""
+wordpress_ssl_ca_source: ""
+wordpress_ssl_cert_dir: "/etc/ssl/wordpress"
+
+# Credential save configuration
+wordpress_credentials_save_enabled: true
+wordpress_credentials_save_path: "/opt/ansible/credentials/wordpress"

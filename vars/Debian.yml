@@ -1,0 +1,28 @@
+---
+wordpress_php_packages:
+  - "php{{ wordpress_php_version }}"
+  - "php{{ wordpress_php_version }}-cli"
+  - "php{{ wordpress_php_version }}-fpm"
+  - "php{{ wordpress_php_version }}-mysql"
+  - "php{{ wordpress_php_version }}-curl"
+  - "php{{ wordpress_php_version }}-gd"
+  - "php{{ wordpress_php_version }}-intl"
+  - "php{{ wordpress_php_version }}-mbstring"
+  - "php{{ wordpress_php_version }}-xml"
+  - "php{{ wordpress_php_version }}-zip"
+  - "php{{ wordpress_php_version }}-soap"
+  - "php{{ wordpress_php_version }}-imagick"
+  - "php{{ wordpress_php_version }}-bcmath"
+  - "php{{ wordpress_php_version }}-opcache"
+
+wordpress_prerequisite_packages:
+  - curl
+  - unzip
+  - tar
+  - ghostscript
+
+wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
+wordpress_php_fpm_pool_dir: "/etc/php/{{ wordpress_php_version }}/fpm/pool.d"
+wordpress_php_fpm_sock_dir: "/run/php"
+wordpress_php_fpm_log_dir: "/var/log/php{{ wordpress_php_version }}-fpm"
+wordpress_php_ini_dir: "/etc/php/{{ wordpress_php_version }}/fpm"

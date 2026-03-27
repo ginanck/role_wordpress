@@ -1,0 +1,44 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check WordPress Directory Exists
+      ansible.builtin.stat:
+        path: /var/www/example.com/wp-config.php
+      register: wordpress_verify_config
+
+    - name: Assert WordPress Is Installed
+      ansible.builtin.assert:
+        that:
+          - wordpress_verify_config.stat.exists
+
+    - name: Check PHP-FPM Service Is Running
+      ansible.builtin.command:
+        cmd: systemctl is-active php{{ wordpress_php_version | default('8.3') }}-fpm
+      register: wordpress_verify_phpfpm
+      changed_when: false
+      failed_when: false
+
+    - name: Check PHP-FPM Service Is Running (RedHat)
+      ansible.builtin.command:
+        cmd: systemctl is-active php-fpm
+      register: wordpress_verify_phpfpm_rh
+      changed_when: false
+      failed_when: false
+      when: wordpress_verify_phpfpm.rc != 0
+
+    - name: Assert PHP-FPM Is Active
+      ansible.builtin.assert:
+        that:
+          - wordpress_verify_phpfpm.rc == 0 or wordpress_verify_phpfpm_rh.rc | default(1) == 0
+
+    - name: Check WP-CLI Is Installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/wp
+      register: wordpress_verify_wpcli
+
+    - name: Assert WP-CLI Exists
+      ansible.builtin.assert:
+        that:
+          - wordpress_verify_wpcli.stat.exists

@@ -1,0 +1,34 @@
+---
+- name: Include OS-Specific Variables
+  ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
+- name: Install PHP Repository
+  ansible.builtin.include_tasks: "repository/{{ ansible_facts['os_family'] }}.yml"
+
+- name: Install PHP and Prerequisites
+  ansible.builtin.include_tasks: "install/{{ ansible_facts['os_family'] }}.yml"
+
+- name: Install WP-CLI
+  ansible.builtin.include_tasks: wp_cli.yml
+
+- name: Restore WordPress from Backup
+  ansible.builtin.include_tasks: restore.yml
+  when: wordpress_restore_enabled
+
+- name: Install Fresh WordPress
+  ansible.builtin.include_tasks: install_wordpress.yml
+  when: not wordpress_restore_enabled
+
+- name: Configure WordPress
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Configure PHP-FPM
+  ansible.builtin.include_tasks: php_fpm.yml
+
+- name: Deploy SSL Certificates
+  ansible.builtin.include_tasks: ssl.yml
+  when: wordpress_ssl_enabled
+
+- name: Save WordPress Credentials
+  ansible.builtin.include_tasks: credentials.yml
+  when: wordpress_credentials_save_enabled

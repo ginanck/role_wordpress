@@ -1,0 +1,73 @@
+---
+- name: Check If WordPress Is Already Installed
+  ansible.builtin.stat:
+    path: "{{ wordpress_site_dir }}/wp-config.php"
+  register: wordpress_config_stat
+
+- name: Install Fresh WordPress
+  when: not wordpress_config_stat.stat.exists
+  block:
+    - name: Ensure WordPress Site Directory Exists
+      ansible.builtin.file:
+        path: "{{ wordpress_site_dir }}"
+        state: directory
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        mode: "0755"
+
+    - name: Download WordPress Core
+      ansible.builtin.command:
+        cmd: >
+          {{ wordpress_cli_path }} core download
+          --version={{ wordpress_version }}
+          --locale={{ wordpress_locale }}
+          --path={{ wordpress_site_dir }}
+          --allow-root
+        creates: "{{ wordpress_site_dir }}/wp-login.php"
+
+    - name: Set Ownership on Downloaded WordPress Files
+      ansible.builtin.file:
+        path: "{{ wordpress_site_dir }}"
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        recurse: true
+
+    - name: Create wp-config.php
+      ansible.builtin.template:
+        src: wp-config.php.j2
+        dest: "{{ wordpress_site_dir }}/wp-config.php"
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        mode: "0640"
+
+    - name: Generate Authentication Keys and Salts
+      ansible.builtin.command:
+        cmd: "{{ wordpress_cli_path }} config shuffle-salts --path={{ wordpress_site_dir }} --allow-root"
+      changed_when: false
+      failed_when: false
+      when: wordpress_auth_key | length == 0
+
+    - name: Install WordPress via WP-CLI
+      ansible.builtin.command:
+        cmd: >
+          {{ wordpress_cli_path }} core install
+          --url={{ wordpress_domain }}
+          --title="{{ wordpress_site_title }}"
+          --admin_user={{ wordpress_admin_user }}
+          --admin_password={{ wordpress_admin_password }}
+          --admin_email={{ wordpress_admin_email }}
+          --skip-email
+          --path={{ wordpress_site_dir }}
+          --allow-root
+      register: wordpress_install_result
+      changed_when: "'WordPress is already installed' not in wordpress_install_result.stdout"
+      failed_when:
+        - wordpress_install_result.rc != 0
+        - "'WordPress is already installed' not in wordpress_install_result.stdout"
+
+    - name: Set Final Ownership on WordPress Files
+      ansible.builtin.file:
+        path: "{{ wordpress_site_dir }}"
+        owner: "{{ wordpress_owner }}"
+        group: "{{ wordpress_group }}"
+        recurse: true

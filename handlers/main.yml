@@ -1,0 +1,11 @@
+---
+- name: restart php-fpm
+  ansible.builtin.systemd:
+    name: "{{ wordpress_php_fpm_service }}"
+    state: restarted
+    daemon_reload: true
+
+- name: reload php-fpm
+  ansible.builtin.systemd:
+    name: "{{ wordpress_php_fpm_service }}"
+    state: reloaded
