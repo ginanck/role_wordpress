@@ -50,16 +50,18 @@
           register: wordpress_restore_archive_copied
 
         - name: Extract tar.gz WordPress Archive
-          ansible.builtin.command:
-            cmd: "tar -xzf {{ wordpress_restore_archive_copied.dest }} -C {{ wordpress_site_dir }}"
+          ansible.builtin.unarchive:
+            src: "{{ wordpress_restore_archive_copied.dest }}"
+            dest: "{{ wordpress_site_dir }}"
+            remote_src: true
           when: wordpress_restore_files_source is search('\\.tar\\.gz$')
-          changed_when: true
 
         - name: Extract zip WordPress Archive
-          ansible.builtin.command:
-            cmd: "unzip -o {{ wordpress_restore_archive_copied.dest }} -d {{ wordpress_site_dir }}"
+          ansible.builtin.unarchive:
+            src: "{{ wordpress_restore_archive_copied.dest }}"
+            dest: "{{ wordpress_site_dir }}"
+            remote_src: true
           when: wordpress_restore_files_source is search('\\.zip$')
-          changed_when: true
 
     - name: Set Correct Ownership on Restored Files
       ansible.builtin.file:
