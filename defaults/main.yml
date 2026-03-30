@@ -70,5 +70,15 @@ wordpress_ssl_ca_source: ""
 wordpress_ssl_cert_dir: "/etc/ssl/wordpress"
 
 # Credential save configuration
-wordpress_credentials_save_enabled: true
-wordpress_credentials_save_path: "/opt/ansible/credentials/wordpress"
+wordpress_credentials_save_enabled: false
+wordpress_credentials_save_path: "/tmp/wordpress"
+
+# stmp configuration
+wordpress_smtp_enabled: false
+wordpress_smtp_from: "info@example"
+wordpress_smtp_from_name: "Example Business"
+wordpress_smtp_host: "smtp.gmail.com"
+wordpress_smtp_port: 587
+wordpress_smtp_encryption: "tls"
+wordpress_smtp_user: "info@example"
+wordpress_smtp_password: "example"
