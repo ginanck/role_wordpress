@@ -70,5 +70,5 @@ wordpress_ssl_ca_source: ""
 wordpress_ssl_cert_dir: "/etc/ssl/wordpress"
 
 # Credential save configuration
-wordpress_credentials_save_enabled: true
-wordpress_credentials_save_path: "/opt/ansible/credentials/wordpress"
+wordpress_credentials_save_enabled: false
+wordpress_credentials_save_path: "/tmp/wordpress"
