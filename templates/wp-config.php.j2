@@ -68,6 +68,25 @@ if ( ! defined( 'WP_DEBUG' ) ) {
 	define( 'WP_DEBUG', {{ wordpress_debug | lower }} );
 }
 
+{% if wordpress_smtp_enabled | default(false) %}
+/**
+ * WP Mail SMTP configuration.
+ */
+define( 'WPMS_ON', true );
+define( 'WPMS_MAIL_FROM', '{{ wordpress_smtp_from }}' );
+define( 'WPMS_MAIL_FROM_FORCE', true );
+define( 'WPMS_MAIL_FROM_NAME', '{{ wordpress_smtp_from_name }}' );
+define( 'WPMS_MAIL_FROM_NAME_FORCE', true );
+define( 'WPMS_MAILER', 'smtp' );
+define( 'WPMS_SMTP_HOST', '{{ wordpress_smtp_host }}' );
+define( 'WPMS_SMTP_PORT', {{ wordpress_smtp_port }} );
+define( 'WPMS_SSL', '{{ wordpress_smtp_encryption }}' );
+define( 'WPMS_SMTP_AUTH', true );
+define( 'WPMS_SMTP_USER', '{{ wordpress_smtp_user }}' );
+define( 'WPMS_SMTP_PASS', '{{ wordpress_smtp_password }}' );
+define( 'WPMS_SMTP_AUTOTLS', true );
+{% endif %}
+
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
