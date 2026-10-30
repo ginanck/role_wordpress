@@ -2,13 +2,15 @@
 dependency:
   name: shell
   command: |
-    ansible-galaxy role install -r meta/install_requirements.yml -p ./roles --force
-    ansible-galaxy collection install -r meta/install_requirements.yml -p ./collections --force
+    set -eu
+    rm -rf "${MOLECULE_PROJECT_DIRECTORY}/dependency"
+    ansible-galaxy role install -r "${MOLECULE_PROJECT_DIRECTORY}/meta/install_requirements.yml" -p "${MOLECULE_PROJECT_DIRECTORY}/dependency/roles"
+    ansible-galaxy collection install -r "${MOLECULE_PROJECT_DIRECTORY}/meta/install_requirements.yml" -p "${MOLECULE_PROJECT_DIRECTORY}/dependency/collections"
 driver:
   name: docker
 platforms:
-  - name: rockylinux-9
-    image: ghcr.io/ginanck/molecule-rockylinux:9-latest
+  - name: rockylinux-8
+    image: ghcr.io/ginanck/molecule-rockylinux:8-latest
     pre_build_image: true
     privileged: true
     volumes:
@@ -22,36 +24,19 @@ platforms:
 provisioner:
   name: ansible
   env:
-    ANSIBLE_ROLES_PATH: ../../roles:../../../
-    ANSIBLE_COLLECTIONS_PATH: ../../collections
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/dependency/roles:${MOLECULE_PROJECT_DIRECTORY}/..
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/dependency/collections
   inventory:
     host_vars:
-      rockylinux-9:
+      rockylinux-8:
         ansible_user: root
-        wordpress_domain: "example.com"
-        wordpress_db_host: "localhost"
-        wordpress_db_name: "wordpress"
-        wordpress_db_user: "wordpress"
-        wordpress_db_password: "test_password"
-        wordpress_admin_password: "test_admin_password"
-        mariadb_root_password: "molecule_test_password"
-        mariadb_databases:
-          - name: wordpress
-        mariadb_users:
-          - name: wordpress
-            password: "test_password"
-            host: "localhost"
-            priv: "wordpress.*:ALL"
-        mariadb_credentials_save_enabled: false
-        nginx_sysctl_parameters: []
-        wordpress_credentials_save_enabled: false
+        base_hostname: "rockylinux-8"
   playbooks:
     converge: ../resources/converge.yml
     prepare: ../resources/prepare.yml
+    verify: ../resources/verify.yml
 verifier:
   name: ansible
-  options:
-    playbook: ../resources/verify.yml
 scenario:
   test_sequence:
     - dependency

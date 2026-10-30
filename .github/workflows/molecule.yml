@@ -17,13 +17,8 @@ on:
         options:
           - all
           - default
-          - almalinux-9
-          - almalinux-10
+          - rockylinux-9
           - rockylinux-10
-          - debian-11
-          - debian-12
-          - ubuntu-2204
-          - ubuntu-2404
       debug_mode:
         description: 'Enable debug mode for verbose output'
         required: false
@@ -35,7 +30,7 @@ jobs:
     name: Lint Syntax Checks
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ginanck/molecule-runner:python3.12-2.15.13
+      image: ghcr.io/ginanck/molecule-runner:python3.12-2.21.5
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
@@ -113,7 +108,7 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ginanck/molecule-runner:python3.12-2.15.13
+      image: ghcr.io/ginanck/molecule-runner:python3.12-2.21.5
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
     strategy:
