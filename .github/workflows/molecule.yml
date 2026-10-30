@@ -37,6 +37,10 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Ensure lint tools are installed
+        run: |
+          command -v flake8 >/dev/null || python3 -m pip install --no-cache-dir "flake8==7.1.1"
+
       - name: Download linter configurations
         run: |
           curl -fsSL https://raw.githubusercontent.com/ginanck/shared-pre-commit-hooks/master/config/ansible-lint.yml -o ansible-lint.yml
